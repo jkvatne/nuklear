@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"runtime"
 	"unsafe"
-
+	"image"
 	"github.com/go-gl/gl/v3.2-core/gl"
 )
 
@@ -277,4 +277,32 @@ type platformDevice struct {
 	uniform_proj int32
 
 	font_tex uint32
+}
+
+// NkImageFromRgba converts RGBA image to NkImage (texture)
+// Call with tex=0 for first time use, then keep tex for later use.
+// To show the new image, call  nk.NkImage(ctx, myImage)
+func NkImageFromRgba(tex *uint32, rgba *image.RGBA) Image {
+	gl.Enable(gl.TEXTURE_2D)
+	if *tex == 0 {
+		gl.GenTextures(1, tex)
+	}
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D, *tex)
+	gl.TexParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST)
+	gl.TexParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR_MIPMAP_NEAREST)
+	gl.TexParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	gl.TexParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	gl.TexImage2D(
+		gl.TEXTURE_2D,
+		0,                         // Level of detail, 0 is base image level
+		gl.RGBA8,                  // Format. COuld ge RGB8 or RGB16UI
+		int32(rgba.Bounds().Dx()), // Width
+		int32(rgba.Bounds().Dy()), // Height
+		0,                // Must be 0
+		gl.RGBA,          // Pixel data format of last parameter rgba,Pix, could be RGB
+		gl.UNSIGNED_BYTE, // Data type for of last parameter rgba,Pix, could be UNSIGNED_SHORT
+		gl.Ptr(rgba.Pix)) // Pixel data
+	gl.GenerateMipmap(gl.TEXTURE_2D)
+	return NkImageId(int32(*tex))
 }
