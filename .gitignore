@@ -1,1 +1,13 @@
-.DS_Store
+.private/
+notes/
+**/*.exe
+.idea/
+*.xml
+*.json
+build/*
+*.log
+*.txt
+*.pcd
+*.cfg
+*.raw
+*.png

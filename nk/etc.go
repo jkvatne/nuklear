@@ -315,3 +315,64 @@ func SetTextColor(ctx *Context, color Color) {
 func SetBackgroundColor(ctx *Context, color Color) {
 	ctx.Style().Window().fixed_background = C.struct_nk_style_item(NkStyleItemColor(color))
 }
+
+func (s *Style) Edit() *StyleEdit {
+	return (*StyleEdit)(&s.edit)
+}
+
+func (s *Style) Button() *StyleButton {
+	return (*StyleButton)(&s.button)
+}
+
+func (s *Style) Combo() *StyleCombo {
+	return (*StyleCombo)(&s.combo)
+}
+
+func SetEditActive(ctx *Context, color Color) {
+	ctx.Style().Edit().active = C.struct_nk_style_item(NkStyleItemColor(color))
+}
+
+func SetEditNormal(ctx *Context, color Color) {
+	ctx.Style().Edit().normal = C.struct_nk_style_item(NkStyleItemColor(color))
+}
+
+func SetButtonNormal(ctx *Context, color Color) {
+	ctx.Style().Button().normal = C.struct_nk_style_item(NkStyleItemColor(color))
+}
+
+func SetEditHover(ctx *Context, color Color) {
+	ctx.Style().Edit().hover = C.struct_nk_style_item(NkStyleItemColor(color))
+}
+
+func SetComboHover(ctx *Context, color Color) {
+	ctx.Style().Combo().hover = C.struct_nk_style_item(NkStyleItemColor(color))
+}
+
+// TabHandler will move focus to next edit field when tab is pressed
+func TabHandler(ctx *Context)  {
+	if NkInputIsKeyPressed(ctx.Input(), KeyTab)>0 {
+		if NkInputIsKeyPressed(ctx.Input(), KeyShift) == 0 {
+			if ctx.current.edit.name<ctx.current.edit.old-1 {
+				ctx.current.edit.name++
+			}
+		} else {
+			if ctx.current.edit.name>0 {
+				ctx.current.edit.name--
+			}
+		}
+		ctx.current.edit.sel_start = 0
+		ctx.current.edit.sel_end = ctx.text_edit.string.len
+	}
+}
+
+// SetSpacing will change the style's window spacing, used to separate columns in rows
+func SetSpacing(ctx *Context, x float32, y float32) {
+	s := NkVec2(x,y)
+	ctx.Style().Window().spacing = C.struct_nk_vec2(s)
+}
+
+
+func SetComboButtonPadding(ctx *Context, x float32, y float32) {
+	s := NkVec2(x,y)
+	ctx.Style().combo.button_padding = C.struct_nk_vec2(s)
+}

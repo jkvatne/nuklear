@@ -1,3 +1,4 @@
+#include <stdio.h>
 /*
  Nuklear - 2.00.4 - public domain
  no warranty implied; use at your own risk.
@@ -16796,7 +16797,7 @@ nk_style_from_table(struct nk_context *ctx, const struct nk_color *table)
     edit->padding           = nk_vec2(4,4);
     edit->row_padding       = 2;
     edit->cursor_size       = 4;
-    edit->border            = 1;
+    edit->border            = 0;
     edit->rounding          = 0;
 
     /* property */
@@ -16886,7 +16887,7 @@ nk_style_from_table(struct nk_context *ctx, const struct nk_color *table)
     combo->sym_hover        = NK_SYMBOL_TRIANGLE_DOWN;
     combo->sym_active       = NK_SYMBOL_TRIANGLE_DOWN;
     combo->content_padding  = nk_vec2(4,4);
-    combo->button_padding   = nk_vec2(0,4);
+    combo->button_padding   = nk_vec2(0,0);  // JKV: Works together with button->padding below
     combo->spacing          = nk_vec2(4,0);
     combo->border           = 1;
     combo->rounding         = 0;
@@ -16902,7 +16903,7 @@ nk_style_from_table(struct nk_context *ctx, const struct nk_color *table)
     button->text_normal     = table[NK_COLOR_TEXT];
     button->text_hover      = table[NK_COLOR_TEXT];
     button->text_active     = table[NK_COLOR_TEXT];
-    button->padding         = nk_vec2(2.0f,2.0f);
+    button->padding         = nk_vec2(0.0f,0.0f);   // JKV Was 2.0, 2.00. Use button_padding above instead
     button->touch_padding   = nk_vec2(0.0f,0.0f);
     button->userdata        = nk_handle_ptr(0);
     button->text_alignment  = NK_TEXT_CENTERED;
@@ -17874,6 +17875,7 @@ nk_panel_begin(struct nk_context *ctx, const char *title, enum nk_panel_type pan
                 style->window.header.close_symbol, NK_BUTTON_DEFAULT,
                 &style->window.header.close_button, in, style->font) && !(win->flags & NK_WINDOW_ROM))
             {
+                printf("Close button pressed\n");
                 layout->flags |= NK_WINDOW_HIDDEN;
                 layout->flags &= (nk_flags)~NK_WINDOW_MINIMIZED;
             }
